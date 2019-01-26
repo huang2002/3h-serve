@@ -1,0 +1,35 @@
+{
+  "name": "3h-serve",
+  "version": "0.1.0",
+  "description": "A simple but powerful server.",
+  "main": "src/crtServer.js",
+  "bin": "src/cli.js",
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": "huang2002/3h-serve",
+  "keywords": [
+    "serve",
+    "server",
+    "cli",
+    "spa",
+    "3h"
+  ],
+  "author": "3h",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huang2002/3h-serve/issues"
+  },
+  "homepage": "https://github.com/huang2002/3h-serve#readme",
+  "dependencies": {
+    "3h-cli": "^1.5.0",
+    "3h-log": "^3.1.1"
+  },
+  "devDependencies": {
+    "3h-join": "^2.0.0",
+    "@types/node": "^10.12.18"
+  },
+  "files": [
+    "src"
+  ]
+}
