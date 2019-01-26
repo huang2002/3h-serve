@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const CLI = require('3h-cli'),
     { crtServer, DEFAULT_PORT, DEFAULT_DEFAULT_PAGE, DEFAULT_SPA_PAGE,
         DEFAULT_DEFAULT_EXT, DEFAULT_TIME_FMT } = require('./crtServer');

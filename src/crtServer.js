@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const Logger = require('3h-log'),
     { createServer } = require('http'),
     { join, dirname, relative, sep: PATH_SEP } = require('path'),
