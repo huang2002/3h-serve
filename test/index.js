@@ -1,11 +1,10 @@
 const { crtServer } = require('../src/crtServer'),
-    { request } = require('http'),
+    { request, get } = require('http'),
     { readFileSync: read } = require('fs'),
     { join } = require('path'),
     { text } = require('3h-join');
 
 const TEST_PORT = 8080,
-    TEST_HOST = `http://localhost:${TEST_PORT}`,
     FILE_ENCODING = 'utf-8',
     AUTO = process.argv.length < 3;
 
@@ -19,11 +18,35 @@ const server = AUTO && crtServer({
 
 let testCount = 0;
 
-function assert(testPath, expectPath) {
+function logTest(msg) {
+    console.log(`< Test ${msg}`);
+}
+
+function logPassed() {
+    console.log('> passed.');
+}
+
+function reduceTest() {
+    if (--testCount) {
+        return true;
+    } else {
+        console.log('All tests passed!');
+    }
+}
+
+function logException(expect, actual) {
+    console.log('> Not passed!');
+    console.log('Expect:');
+    console.log(expect);
+    console.log('Actual:');
+    console.log(actual);
+}
+
+function assertContent(path, expectPath) {
 
     testCount++;
 
-    request(TEST_HOST + testPath, res => {
+    get({ port: TEST_PORT, path }, res => {
         text(res, (err, actualData) => {
 
             if (err) {
@@ -31,22 +54,16 @@ function assert(testPath, expectPath) {
                 return process.exit(1);
             }
 
-            console.log(`< Test "${testPath}"`);
+            logTest(`"${path}"`);
 
             const expectData = read(join(__dirname, expectPath), FILE_ENCODING);
             if (actualData === expectData) {
-                console.log('> passed.');
-                if (--testCount) {
+                logPassed();
+                if (reduceTest()) {
                     return;
-                } else {
-                    console.log('All tests passed!');
                 }
             } else {
-                console.log('> Not passed!');
-                console.log('Expect:');
-                console.log(expectData);
-                console.log('Actual:');
-                console.log(actualData);
+                logException(expectData, actualData);
             }
 
             if (AUTO) {
@@ -54,17 +71,55 @@ function assert(testPath, expectPath) {
             }
 
         });
+    });
+
+}
+
+assertContent('/', '200.html');
+assertContent('/index', '200.html');
+assertContent('/login', '200.html');
+assertContent('/foo.html', 'foo.html');
+assertContent('/foo', 'foo.html');
+assertContent('/foo/', 'foo.html');
+assertContent('/bar', 'bar/index.html');
+assertContent('/bar/', 'bar/index.html');
+assertContent('/test?404', '404.html');
+assertContent('/not/found', '404.html');
+
+function assertHeaders(path, expectHeaders) {
+
+    testCount++;
+
+    request({ method: 'HEAD', port: TEST_PORT, path }, res => {
+
+        const { headers } = res;
+        let passed = true;
+
+        Object.entries(expectHeaders).forEach(([key, expectValue]) => {
+
+            logTest(`header "${key}"`);
+
+            const actualValue = headers[key];
+            if (expectValue === actualValue) {
+                logPassed();
+            } else {
+                passed = false;
+                logException(expectValue, actualValue);
+            }
+
+        });
+
+        if (!(passed && reduceTest()) && AUTO) {
+            server.close();
+        }
+
     }).end();
 
 }
 
-assert('/', '200.html');
-assert('/index', '200.html');
-assert('/login', '200.html');
-assert('/foo.html', 'foo.html');
-assert('/foo', 'foo.html');
-assert('/foo/', 'foo.html');
-assert('/bar', 'bar/index.html');
-assert('/bar/', 'bar/index.html');
-assert('/test?404', '404.html');
-assert('/not/found', '404.html');
+assertHeaders('/200.html', {
+    'content-type': 'text/html'
+});
+assertHeaders('/index.js', {
+    'content-type': 'text/javascript'
+});

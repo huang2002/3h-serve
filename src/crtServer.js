@@ -1,5 +1,5 @@
 const Logger = require('3h-log'),
-    { createServer } = require('http'),
+    { createServer, STATUS_CODES } = require('http'),
     { join, dirname, relative, sep: PATH_SEP } = require('path'),
     { existsSync: exists, statSync: stat } = require('fs'),
     { end, respond } = require('./utils'),
@@ -70,8 +70,8 @@ exports.crtServer = (options = {}) => {
     });
     logger.setLevel(DEBUG ? 'debug' : VERBOSE ? 'log' : 'info');
 
-    function logRes(msg) {
-        logger.log('< ' + msg);
+    function logRes(code) {
+        logger.log(`< ${code} ${STATUS_CODES[code]}`);
     }
 
     function debug(msg) {
@@ -85,6 +85,7 @@ exports.crtServer = (options = {}) => {
 
     function resolve404(req, res) {
         if (FALLBACK_PAGE_EXISTS) {
+            res.statusCode = 404;
             respond(
                 FALLBACK_PAGE_PATH,
                 req, res, typeMap,
@@ -93,11 +94,11 @@ exports.crtServer = (options = {}) => {
         } else {
             end(res, 404);
         }
-        logRes('404 Not Found');
+        logRes(404);
     }
 
     function resolve200(path, req, res) {
-        logRes('200 OK');
+        logRes(200);
         respond(
             path,
             req, res, typeMap,
@@ -127,13 +128,13 @@ exports.crtServer = (options = {}) => {
             debug(`Filter: "${FILTERED_URL}"`);
         }
 
-        if (METHOD !== 'GET') {
-            logRes('405 Method Not Allowed');
+        if (METHOD !== 'GET' && METHOD !== 'HEAD') {
+            logRes(405);
             return end(res, 405);
         }
 
         if (FORBIDDEN && FORBIDDEN.test(URL)) {
-            logRes('403 Forbidden');
+            logRes(403);
             return end(res, 403);
         }
 
@@ -183,7 +184,7 @@ exports.crtServer = (options = {}) => {
             }
 
         } catch (err) {
-            logRes('500 Internal Server Error');
+            logRes(500);
             logger.error(err);
             end(res, 500);
         }
