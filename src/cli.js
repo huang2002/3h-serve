@@ -71,7 +71,8 @@ cli.arg({
     help: 'Show log messages.'
 }).arg({
     name: '-debug',
-    help: 'Show debug messages.'
+    help: 'Show debug messages.\n' +
+        '(including log messages)'
 }).arg({
     name: '-time-fmt',
     help: 'Time format.\n' +

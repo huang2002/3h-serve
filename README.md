@@ -62,6 +62,7 @@ npm install 3h-serve -g
     -v, --verbose                 Show log messages.
 
     --debug                       Show debug messages.
+                                  (Including log messages)
 
     --time-fmt                    Time format.
                                   Default: [YYYY-MM-DD HH:mm:SS.sss]
