@@ -8,6 +8,7 @@ const DEFAULT_PORT = exports.DEFAULT_PORT = 88;
 const DEFAULT_DEFAULT_PAGE = exports.DEFAULT_DEFAULT_PAGE = 'index.html';
 const DEFAULT_SPA_PAGE = exports.DEFAULT_SPA_PAGE = '200.html';
 const DEFAULT_DEFAULT_EXT = exports.DEFAULT_DEFAULT_EXT = '.html';
+const DEFAULT_FALLBACK_PAGE = exports.DEFAULT_FALLBACK_PAGE = '/404.html';
 const DEFAULT_TIME_FMT = exports.DEFAULT_TIME_FMT = '[YYYY-MM-DD HH:mm:SS.sss]';
 
 /**
@@ -18,6 +19,7 @@ const DEFAULT_TIME_FMT = exports.DEFAULT_TIME_FMT = '[YYYY-MM-DD HH:mm:SS.sss]';
  * @property {false | string | undefined} defaultPage
  * @property {false | string | undefined} defaultExt
  * @property {false | RegExp | undefined} forbidden
+ * @property {false | string | undefined} fallbackPage
  * @property {boolean | undefined} verbose
  * @property {boolean | undefined} debug
  * @property {string | undefined} timeFmt
@@ -42,6 +44,7 @@ exports.crtServer = (options = {}) => {
         defaultPage: DEFAULT_PAGE = DEFAULT_DEFAULT_PAGE,
         defaultExt: DEFAULT_EXT = DEFAULT_DEFAULT_EXT,
         forbidden: FORBIDDEN,
+        fallbackPage: FALLBACK_PAGE = DEFAULT_FALLBACK_PAGE,
         verbose: VERBOSE,
         timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
         start: START = true,
@@ -49,6 +52,9 @@ exports.crtServer = (options = {}) => {
         seg: SEG = DEBUG && '-'.repeat(10),
         sep: SEP = PATH_SEP
     } = options;
+
+    const FALLBACK_PAGE_PATH = FALLBACK_PAGE && join(DIR, FALLBACK_PAGE),
+        FALLBACK_PAGE_EXISTS = FALLBACK_PAGE && exists(FALLBACK_PAGE_PATH);
 
     const logger = new Logger({
         timeFormat: TIME_FMT
@@ -62,6 +68,20 @@ exports.crtServer = (options = {}) => {
 
     function logRes(msg) {
         logger.log('< ' + msg);
+    }
+
+    function resolve404(req, res) {
+        if (FALLBACK_PAGE_EXISTS) {
+            respond(FALLBACK_PAGE_PATH, req, res);
+        } else {
+            end(res, 404);
+        }
+        logRes('404 Not Found');
+    }
+
+    function resolve200(path, req, res) {
+        logRes('200 OK');
+        respond(path, req, res);
     }
 
     const server = createServer((req, res) => {
@@ -82,36 +102,30 @@ exports.crtServer = (options = {}) => {
 
         const PATH = join(DIR, URL.slice(1));
 
-        function resolve(path) {
-            logRes('200 OK');
-            respond(path, req, res);
-        }
-
         function routeDir(path, isDir) {
 
             if (DEFAULT_PAGE) {
                 const DEFAULT_PAGE_PATH = join(path, DEFAULT_PAGE);
                 if (found(DEFAULT_PAGE_PATH)) {
-                    return resolve(DEFAULT_PAGE_PATH);
+                    return resolve200(DEFAULT_PAGE_PATH, req, res);
                 }
             }
 
             if (DEFAULT_EXT) {
                 const DEFAULT_EXT_PATH = (path.endsWith(SEP) ? path.slice(0, -1) : path) + DEFAULT_EXT;
                 if (found(DEFAULT_EXT_PATH)) {
-                    return resolve(DEFAULT_EXT_PATH);
+                    return resolve200(DEFAULT_EXT_PATH, req, res);
                 }
             }
 
             if (SPA_PAGE) {
                 const SPA_PAGE_PATH = join(isDir ? path : dirname(path), SPA_PAGE);
                 if (found(SPA_PAGE_PATH)) {
-                    return resolve(SPA_PAGE_PATH);
+                    return resolve200(SPA_PAGE_PATH, req, res);
                 }
             }
 
-            logRes('404 Not Found');
-            end(res, 404);
+            resolve404(req, res);
 
         }
 
@@ -119,14 +133,13 @@ exports.crtServer = (options = {}) => {
 
             if (!found(PATH)) {
                 if (PATH.includes('.')) {
-                    logRes('404 Not Found');
-                    end(res, 404);
+                    resolve404(req, res);
                 } else {
                     routeDir(PATH, false);
                 }
             } else {
                 if (stat(PATH).isFile()) {
-                    resolve(PATH);
+                    resolve200(PATH, req, res);
                 } else {
                     routeDir(PATH, true);
                 }

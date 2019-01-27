@@ -8,6 +8,7 @@
 - SPA routing support
 - Default extension support
 - Forbidden url pattern support
+- Fallback page support
 - Gzip/Deflate support
 - Time stamp support
 - Optional routing details
@@ -49,6 +50,11 @@ npm install 3h-serve -g
 
     --forbidden                   Forbidden url pattern.
 
+    --fallback-page     <file>    The path of fallback page.
+                                  Default: /404.html
+
+    --no-fallback-page            Disable fallback pages.
+
     --no-gzip                     Disable gzip.
 
     --no-deflate                  Disable deflate.
@@ -86,6 +92,7 @@ npm install 3h-serve -g
         //   defaultPage?: false | string
         //   defaultExt?: false | string
         //   forbidden?: false | RegExp
+        //   fallbackPage?: false | string
         //   verbose?: boolean
         //   debug?: boolean
         //   timeFmt?: string

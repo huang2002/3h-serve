@@ -18,7 +18,7 @@ const server = AUTO && crtServer({
 
 let testCount = 0;
 
-function test(testPath, expectPath) {
+function assert(testPath, expectPath) {
 
     testCount++;
 
@@ -57,11 +57,12 @@ function test(testPath, expectPath) {
 
 }
 
-test('/', '200.html');
-test('/index', '200.html');
-test('/login', '200.html');
-test('/foo.html', 'foo.html');
-test('/foo', 'foo.html');
-test('/foo/', 'foo.html');
-test('/bar', 'bar/index.html');
-test('/bar/', 'bar/index.html');
+assert('/', '200.html');
+assert('/index', '200.html');
+assert('/login', '200.html');
+assert('/foo.html', 'foo.html');
+assert('/foo', 'foo.html');
+assert('/foo/', 'foo.html');
+assert('/bar', 'bar/index.html');
+assert('/bar/', 'bar/index.html');
+assert('/not/found', '404.html');

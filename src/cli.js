@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 const CLI = require('3h-cli'),
-    { crtServer, DEFAULT_PORT, DEFAULT_DEFAULT_PAGE, DEFAULT_SPA_PAGE,
-        DEFAULT_DEFAULT_EXT, DEFAULT_TIME_FMT } = require('./crtServer');
+    { crtServer, DEFAULT_PORT, DEFAULT_DEFAULT_PAGE,
+        DEFAULT_SPA_PAGE, DEFAULT_DEFAULT_EXT, DEFAULT_FALLBACK_PAGE,
+        DEFAULT_TIME_FMT } = require('./crtServer');
 
 const cli = CLI.create({
     name: '3h-serve',
@@ -51,6 +52,14 @@ cli.arg({
     name: '-forbidden',
     help: 'Forbidden url pattern.'
 }).arg({
+    name: '-fallback-page',
+    val: 'file',
+    help: 'The path of fallback page.\n' +
+        `Default: ${DEFAULT_FALLBACK_PAGE}`
+}).arg({
+    name: '-no-fallback-page',
+    help: 'Disable fallback pages.'
+}).arg({
     name: '-no-gzip',
     help: 'Disable gzip.'
 }).arg({
@@ -90,6 +99,7 @@ cli.on('exec', args => {
         defaultExt: args.has('-no-default-ext') ? false : pick('-default-ext'),
         defaultExt: args.has('-no-spa') ? false : pick('-spa'),
         forbidden: args.has('-forbidden') && new RegExp(args.get('-forbidden')[0]),
+        fallbackPage: args.has('-no-fallback-page') ? false : pick('-fallback-page'),
         gzip: !args.has('-gzip'),
         deflate: !args.has('-deflate'),
         verbose: args.has('-verbose'),

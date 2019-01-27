@@ -10,8 +10,10 @@ const GZIP = 'gzip';
 const DEFLATE = 'deflate';
 
 exports.respond = (path, req, res) => {
+
     const src = createReadStream(path),
         accept = req.headers['accept-encoding'] || [];
+
     if (accept.includes(GZIP)) {
         res.setHeader('Content-Encoding', GZIP);
         src.pipe(createGzip()).pipe(res);
@@ -21,4 +23,5 @@ exports.respond = (path, req, res) => {
     } else {
         src.pipe(res);
     }
+
 };
