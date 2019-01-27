@@ -10,7 +10,7 @@ exports.end = (res, code) => {
 const GZIP = 'gzip';
 const DEFLATE = 'deflate';
 
-exports.respond = (path, req, res, typeMap) => {
+exports.respond = (path, req, res, typeMap, gzipEnabled, deflateEnabled) => {
 
     const src = createReadStream(path),
         accept = req.headers['accept-encoding'] || [],
@@ -20,10 +20,10 @@ exports.respond = (path, req, res, typeMap) => {
         res.setHeader('Content-Type', typeMap.get(ext));
     }
 
-    if (accept.includes(GZIP)) {
+    if (gzipEnabled && accept.includes(GZIP)) {
         res.setHeader('Content-Encoding', GZIP);
         src.pipe(createGzip()).pipe(res);
-    } else if (accept.includes(DEFLATE)) {
+    } else if (deflateEnabled && accept.includes(DEFLATE)) {
         res.setHeader('Content-Encoding', DEFLATE);
         src.pipe(createDeflate()).pipe(res);
     } else {

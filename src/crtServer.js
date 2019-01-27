@@ -15,6 +15,8 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
 
 /**
  * @typedef CrtServerOptions
+ * @property {boolean | undefined} start
+ * @property {((req: import('http').IncomingMessage, res: import('http').ServerResponse) => boolean | string) | undefined} filter
  * @property {string | undefined} dir
  * @property {number | undefined} port
  * @property {false | string | undefined} spaPage
@@ -23,24 +25,26 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
  * @property {false | RegExp | undefined} forbidden
  * @property {false | string | undefined} fallbackPage
  * @property {Map<string, string>} typeMap
+ * @property {boolean | undefined} gzip
+ * @property {boolean | undefined} deflate
  * @property {boolean | undefined} verbose
  * @property {boolean | undefined} debug
  * @property {string | undefined} timeFmt
- * @property {boolean | undefined} gzip
- * @property {boolean | undefined} deflate
- * @property {boolean | undefined} start
  * @property {false | string | undefined} seg
  * @property {string | undefined} sep
  */
 
 /**
  * @param {CrtServerOptions | undefined} options
+ * @returns {import('http').Server}
  */
 exports.crtServer = (options = {}) => {
 
     const CWD = process.cwd();
 
     const {
+        start: START = true,
+        filter,
         dir: DIR = CWD,
         port: PORT = DEFAULT_PORT,
         spaPage: SPA_PAGE = DEFAULT_SPA_PAGE,
@@ -48,11 +52,12 @@ exports.crtServer = (options = {}) => {
         defaultExt: DEFAULT_EXT = DEFAULT_DEFAULT_EXT,
         forbidden: FORBIDDEN,
         fallbackPage: FALLBACK_PAGE = DEFAULT_FALLBACK_PAGE,
-        typeMap: TYPE_MAP = DEFAULT_TYPE_MAP,
+        typeMap = DEFAULT_TYPE_MAP,
+        gzip: GZIP_ENABLED = true,
+        deflate: DEFLATE_ENABLED = true,
         verbose: VERBOSE,
-        timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
-        start: START = true,
         debug: DEBUG,
+        timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
         seg: SEG = DEBUG && '-'.repeat(10),
         sep: SEP = PATH_SEP
     } = options;
@@ -65,18 +70,26 @@ exports.crtServer = (options = {}) => {
     });
     logger.setLevel(DEBUG ? 'debug' : VERBOSE ? 'log' : 'info');
 
-    function found(path) {
-        logger.debug(`- Find "${path}"`);
-        return exists(path);
-    }
-
     function logRes(msg) {
         logger.log('< ' + msg);
     }
 
+    function debug(msg) {
+        logger.debug('- ' + msg);
+    }
+
+    function found(path) {
+        debug(`Find "${path}"`);
+        return exists(path);
+    }
+
     function resolve404(req, res) {
         if (FALLBACK_PAGE_EXISTS) {
-            respond(FALLBACK_PAGE_PATH, req, res, TYPE_MAP);
+            respond(
+                FALLBACK_PAGE_PATH,
+                req, res, typeMap,
+                GZIP_ENABLED, DEFLATE_ENABLED
+            );
         } else {
             end(res, 404);
         }
@@ -85,21 +98,41 @@ exports.crtServer = (options = {}) => {
 
     function resolve200(path, req, res) {
         logRes('200 OK');
-        respond(path, req, res, TYPE_MAP);
+        respond(
+            path,
+            req, res, typeMap,
+            GZIP_ENABLED, DEFLATE_ENABLED
+        );
     }
 
     const server = createServer((req, res) => {
 
-        const { method: METHOD } = req,
-            URL = req.url.split('?')[0];
+        const FILTER_RESULT = filter && filter(req, res);
+
+        if (FILTER_RESULT === false) {
+            return;
+        }
+
+        const { method: METHOD, url: ORIGINAL_URL } = req,
+            FILTERED_URL = typeof FILTER_RESULT === 'string' ? FILTER_RESULT : ORIGINAL_URL,
+            URL = FILTERED_URL.split('?')[0];
 
         if (SEG) {
             logger.log(SEG);
         }
 
-        logger.log(`> ${METHOD} ${URL}`);
+        logger.log(`> ${METHOD} ${ORIGINAL_URL}`);
 
-        if (METHOD !== 'GET' || FORBIDDEN && FORBIDDEN.test(URL)) {
+        if (FILTERED_URL !== ORIGINAL_URL) {
+            debug(`Filter: "${FILTERED_URL}"`);
+        }
+
+        if (METHOD !== 'GET') {
+            logRes('405 Method Not Allowed');
+            return end(res, 405);
+        }
+
+        if (FORBIDDEN && FORBIDDEN.test(URL)) {
             logRes('403 Forbidden');
             return end(res, 403);
         }

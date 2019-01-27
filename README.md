@@ -90,6 +90,8 @@ A simple but powerful server.
     // Create a server
     const server = crtServer({
         // Options:
+        //   start?: boolean
+        //   filter?: (req, res) => boolean | string
         //   dir?: string
         //   port?: number
         //   spaPage?: false | string
@@ -98,12 +100,11 @@ A simple but powerful server.
         //   forbidden?: false | RegExp
         //   fallbackPage?: false | string
         //   typeMap?: Map<string, string>
+        //   gzip?: boolean
+        //   deflate?: boolean
         //   verbose?: boolean
         //   debug?: boolean
         //   timeFmt?: string
-        //   gzip?: boolean
-        //   deflate?: boolean
-        //   start?: boolean
         //   seg?: false | string
         //   sep?: string
     });

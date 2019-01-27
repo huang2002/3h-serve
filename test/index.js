@@ -10,6 +10,7 @@ const TEST_PORT = 8080,
     AUTO = process.argv.length < 3;
 
 const server = AUTO && crtServer({
+    filter: res => res.url.endsWith('?404') ? '/not/found' : true,
     port: TEST_PORT,
     dir: __dirname,
     verbose: true,
@@ -65,4 +66,5 @@ assert('/foo', 'foo.html');
 assert('/foo/', 'foo.html');
 assert('/bar', 'bar/index.html');
 assert('/bar/', 'bar/index.html');
+assert('/test?404', '404.html');
 assert('/not/found', '404.html');
