@@ -12,9 +12,8 @@ const cli = CLI.create({
     lineGapSize: 1
 });
 
-cli.arg({
+cli.first({
     name: 'd',
-    alias: ['-dir'],
     val: 'dir',
     help: 'The root directory.\n' +
         'Default: `process.cwd()`'
