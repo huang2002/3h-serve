@@ -5,6 +5,8 @@
     "main": "src/crtServer.js",
     "bin": "src/cli.js",
     "scripts": {
+        "start": "node src/cli test --debug",
+        "help": "node src/cli -h",
         "test": "node test/index.js"
     },
     "repository": "huang2002/3h-serve",
