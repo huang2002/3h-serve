@@ -1,4 +1,5 @@
 const { createGzip, createDeflate } = require('zlib'),
+    { extname } = require('path'),
     { createReadStream } = require('fs');
 
 exports.end = (res, code) => {
@@ -9,10 +10,15 @@ exports.end = (res, code) => {
 const GZIP = 'gzip';
 const DEFLATE = 'deflate';
 
-exports.respond = (path, req, res) => {
+exports.respond = (path, req, res, typeMap) => {
 
     const src = createReadStream(path),
-        accept = req.headers['accept-encoding'] || [];
+        accept = req.headers['accept-encoding'] || [],
+        ext = extname(path).slice(1);
+
+    if (typeMap.has(ext)) {
+        res.setHeader('Content-Type', typeMap.get(ext));
+    }
 
     if (accept.includes(GZIP)) {
         res.setHeader('Content-Encoding', GZIP);

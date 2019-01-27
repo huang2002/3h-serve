@@ -10,7 +10,8 @@
 - Forbidden url pattern support
 - Fallback page support
 - Gzip/Deflate support
-- Time stamp support
+- Content type support
+- Time stamp logging support
 - Optional routing details
 
 ## Usage
@@ -25,9 +26,11 @@ npm install 3h-serve -g
 ```
 
 ```txt
-3h-serve  [options]
+A simple but powerful server.
 
-    -d, --dir           <dir>     The root directory.
+3h-serve <dir> [options]
+
+    <dir>                         The root directory.
                                   Default: `process.cwd()`
 
     -p, --port          <port>    The port to listen on.
@@ -62,7 +65,7 @@ npm install 3h-serve -g
     -v, --verbose                 Show log messages.
 
     --debug                       Show debug messages.
-                                  (Including log messages)
+                                  (including log messages)
 
     --time-fmt                    Time format.
                                   Default: [YYYY-MM-DD HH:mm:SS.sss]
@@ -94,6 +97,7 @@ npm install 3h-serve -g
         //   defaultExt?: false | string
         //   forbidden?: false | RegExp
         //   fallbackPage?: false | string
+        //   typeMap?: Map<string, string>
         //   verbose?: boolean
         //   debug?: boolean
         //   timeFmt?: string

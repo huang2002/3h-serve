@@ -2,7 +2,8 @@ const Logger = require('3h-log'),
     { createServer } = require('http'),
     { join, dirname, relative, sep: PATH_SEP } = require('path'),
     { existsSync: exists, statSync: stat } = require('fs'),
-    { end, respond } = require('./utils');
+    { end, respond } = require('./utils'),
+    DEFAULT_TYPE_MAP = require('./typeMap');
 
 const DEFAULT_PORT = exports.DEFAULT_PORT = 88;
 const DEFAULT_DEFAULT_PAGE = exports.DEFAULT_DEFAULT_PAGE = 'index.html';
@@ -10,6 +11,7 @@ const DEFAULT_SPA_PAGE = exports.DEFAULT_SPA_PAGE = '200.html';
 const DEFAULT_DEFAULT_EXT = exports.DEFAULT_DEFAULT_EXT = '.html';
 const DEFAULT_FALLBACK_PAGE = exports.DEFAULT_FALLBACK_PAGE = '/404.html';
 const DEFAULT_TIME_FMT = exports.DEFAULT_TIME_FMT = '[YYYY-MM-DD HH:mm:SS.sss]';
+exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
 
 /**
  * @typedef CrtServerOptions
@@ -20,6 +22,7 @@ const DEFAULT_TIME_FMT = exports.DEFAULT_TIME_FMT = '[YYYY-MM-DD HH:mm:SS.sss]';
  * @property {false | string | undefined} defaultExt
  * @property {false | RegExp | undefined} forbidden
  * @property {false | string | undefined} fallbackPage
+ * @property {Map<string, string>} typeMap
  * @property {boolean | undefined} verbose
  * @property {boolean | undefined} debug
  * @property {string | undefined} timeFmt
@@ -45,6 +48,7 @@ exports.crtServer = (options = {}) => {
         defaultExt: DEFAULT_EXT = DEFAULT_DEFAULT_EXT,
         forbidden: FORBIDDEN,
         fallbackPage: FALLBACK_PAGE = DEFAULT_FALLBACK_PAGE,
+        typeMap: TYPE_MAP = DEFAULT_TYPE_MAP,
         verbose: VERBOSE,
         timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
         start: START = true,
@@ -72,7 +76,7 @@ exports.crtServer = (options = {}) => {
 
     function resolve404(req, res) {
         if (FALLBACK_PAGE_EXISTS) {
-            respond(FALLBACK_PAGE_PATH, req, res);
+            respond(FALLBACK_PAGE_PATH, req, res, TYPE_MAP);
         } else {
             end(res, 404);
         }
@@ -81,7 +85,7 @@ exports.crtServer = (options = {}) => {
 
     function resolve200(path, req, res) {
         logRes('200 OK');
-        respond(path, req, res);
+        respond(path, req, res, TYPE_MAP);
     }
 
     const server = createServer((req, res) => {
