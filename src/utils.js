@@ -1,8 +1,9 @@
 const { createGzip, createDeflate } = require('zlib'),
     { extname } = require('path'),
-    { createReadStream } = require('fs');
+    { createReadStream, readFileSync: read } = require('fs'),
+    { createHash } = require('crypto');
 
-exports.end = (res, code) => {
+const end = exports.end = (res, code) => {
     res.statusCode = code;
     res.end();
 };
@@ -10,11 +11,14 @@ exports.end = (res, code) => {
 const GZIP = 'gzip';
 const DEFLATE = 'deflate';
 
-exports.respond = (path, req, res, typeMap, gzipEnabled, deflateEnabled) => {
+const MD5 = filePath => createHash('md5').update(read(filePath)).digest('hex');
 
-    const ACCEPT_ENCODING = req.headers['accept-encoding'] || [],
-        ACCEPT_GZIP = gzipEnabled && ACCEPT_ENCODING.includes(GZIP),
-        ACCEPT_DEFLATE = deflateEnabled && ACCEPT_ENCODING.includes(DEFLATE),
+exports.respond = ({ path, req, res, typeMap, gzip, deflate, logRes, cache }) => {
+
+    const { headers: HEADERS } = req,
+        ACCEPT_ENCODING = HEADERS['accept-encoding'] || [],
+        ACCEPT_GZIP = gzip && ACCEPT_ENCODING.includes(GZIP),
+        ACCEPT_DEFLATE = deflate && ACCEPT_ENCODING.includes(DEFLATE),
         ext = extname(path).slice(1);
 
     if (typeMap.has(ext)) {
@@ -26,6 +30,23 @@ exports.respond = (path, req, res, typeMap, gzipEnabled, deflateEnabled) => {
     } else if (ACCEPT_DEFLATE) {
         res.setHeader('Content-Encoding', DEFLATE);
     }
+
+    if (cache) {
+
+        const E_TAG = MD5(path);
+
+        res.setHeader('Cache-Control', ['public', 'max-age=31536000', 'no-cache']);
+        res.setHeader('ETag', `"${E_TAG}"`);
+
+        const IF_NONE_MATCH = HEADERS['if-none-match'];
+        if (IF_NONE_MATCH && IF_NONE_MATCH.slice(1, -1) === E_TAG) {
+            logRes(304);
+            return end(res, 304);
+        }
+
+    }
+
+    logRes(200);
 
     if (req.method === 'HEAD') {
         return res.end();

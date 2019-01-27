@@ -27,6 +27,7 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
  * @property {Map<string, string>} typeMap
  * @property {boolean | undefined} gzip
  * @property {boolean | undefined} deflate
+ * @property {boolean | undefined} cache
  * @property {boolean | undefined} verbose
  * @property {boolean | undefined} debug
  * @property {string | undefined} timeFmt
@@ -55,6 +56,7 @@ exports.crtServer = (options = {}) => {
         typeMap = DEFAULT_TYPE_MAP,
         gzip: GZIP_ENABLED = true,
         deflate: DEFLATE_ENABLED = true,
+        cache: CACHE,
         verbose: VERBOSE,
         debug: DEBUG,
         timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
@@ -86,24 +88,29 @@ exports.crtServer = (options = {}) => {
     function resolve404(req, res) {
         if (FALLBACK_PAGE_EXISTS) {
             res.statusCode = 404;
-            respond(
-                FALLBACK_PAGE_PATH,
+            respond({
+                path: FALLBACK_PAGE_PATH,
                 req, res, typeMap,
-                GZIP_ENABLED, DEFLATE_ENABLED
-            );
+                gzip: GZIP_ENABLED,
+                deflate: DEFLATE_ENABLED,
+                cache: CACHE,
+                logRes
+            });
         } else {
+            logRes(404);
             end(res, 404);
         }
-        logRes(404);
     }
 
     function resolve200(path, req, res) {
-        logRes(200);
-        respond(
+        respond({
             path,
             req, res, typeMap,
-            GZIP_ENABLED, DEFLATE_ENABLED
-        );
+            gzip: GZIP_ENABLED,
+            deflate: DEFLATE_ENABLED,
+            cache: CACHE,
+            logRes
+        });
     }
 
     const server = createServer((req, res) => {
@@ -142,18 +149,31 @@ exports.crtServer = (options = {}) => {
 
         function routeDir(path, isDir) {
 
-            if (DEFAULT_PAGE) {
-                const DEFAULT_PAGE_PATH = join(path, DEFAULT_PAGE);
-                if (found(DEFAULT_PAGE_PATH)) {
-                    return resolve200(DEFAULT_PAGE_PATH, req, res);
+            function findDefaultPage() {
+                if (DEFAULT_PAGE) {
+                    const DEFAULT_PAGE_PATH = join(path, DEFAULT_PAGE);
+                    if (found(DEFAULT_PAGE_PATH)) {
+                        resolve200(DEFAULT_PAGE_PATH, req, res);
+                        return true;
+                    }
                 }
             }
 
+            const ENDS_WITH_SEP = path.endsWith(SEP);
+
+            if (ENDS_WITH_SEP && findDefaultPage()) {
+                return;
+            }
+
             if (DEFAULT_EXT) {
-                const DEFAULT_EXT_PATH = (path.endsWith(SEP) ? path.slice(0, -1) : path) + DEFAULT_EXT;
+                const DEFAULT_EXT_PATH = (ENDS_WITH_SEP ? path.slice(0, -1) : path) + DEFAULT_EXT;
                 if (found(DEFAULT_EXT_PATH)) {
                     return resolve200(DEFAULT_EXT_PATH, req, res);
                 }
+            }
+
+            if (!ENDS_WITH_SEP && findDefaultPage()) {
+                return;
             }
 
             if (SPA_PAGE) {

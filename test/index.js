@@ -80,9 +80,7 @@ assertContent('/index', '200.html');
 assertContent('/login', '200.html');
 assertContent('/foo.html', 'foo.html');
 assertContent('/foo', 'foo.html');
-assertContent('/foo/', 'foo.html');
-assertContent('/bar', 'bar/index.html');
-assertContent('/bar/', 'bar/index.html');
+assertContent('/foo/', 'foo/index.html');
 assertContent('/test?404', '404.html');
 assertContent('/not/found', '404.html');
 

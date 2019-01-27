@@ -4,12 +4,14 @@
 
 ## Features
 
-- Default page support
+- Clean URL support
+- Lucid cache control
 - SPA routing support
+- Gzip/Deflate support
+- Default page support
 - Default extension support
 - Forbidden url pattern support
 - Fallback page support
-- Gzip/Deflate support
 - Content type support
 - Time stamp logging support
 - Optional routing details
@@ -62,6 +64,8 @@ A simple but powerful server.
 
     --no-deflate                  Disable deflate.
 
+    --no-cache                    Disable cache.
+
     -v, --verbose                 Show log messages.
 
     --debug                       Show debug messages.
@@ -102,6 +106,7 @@ A simple but powerful server.
         //   typeMap?: Map<string, string>
         //   gzip?: boolean
         //   deflate?: boolean
+        //   cache?: boolean
         //   verbose?: boolean
         //   debug?: boolean
         //   timeFmt?: string

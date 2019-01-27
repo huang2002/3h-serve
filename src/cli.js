@@ -65,6 +65,9 @@ cli.first({
     name: '-no-deflate',
     help: 'Disable deflate.'
 }).arg({
+    name: '-no-cache',
+    help: 'Disable cache.'
+}).arg({
     name: 'v',
     alias: ['-verbose'],
     help: 'Show log messages.'
@@ -100,8 +103,9 @@ cli.on('exec', args => {
         defaultExt: args.has('-no-spa') ? false : pick('-spa'),
         forbidden: args.has('-forbidden') && new RegExp(args.get('-forbidden')[0]),
         fallbackPage: args.has('-no-fallback-page') ? false : pick('-fallback-page'),
-        gzip: !args.has('-gzip'),
-        deflate: !args.has('-deflate'),
+        gzip: !args.has('-no-gzip'),
+        deflate: !args.has('-no-deflate'),
+        cache: !args.has('-no-cache'),
         verbose: args.has('-verbose'),
         debug: args.has('-debug'),
         timeFmt: pick('-time-fmt')
