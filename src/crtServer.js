@@ -217,7 +217,8 @@ exports.crtServer = (options = {}) => {
 
     if (START) {
         server.listen(PORT, () => {
-            logger.info(`Server listening on ${PORT} started in "${relative(CWD, DIR) || '.'}".`);
+            logger.info(`Server started in "${relative(CWD, DIR) || '.'}".`);
+            logger.info(`( port: ${PORT}; pid: ${process.pid} )`);
         });
     }
 
