@@ -35,7 +35,7 @@ exports.respond = ({ path, req, res, typeMap, gzip, deflate, logRes, cache }) =>
 
         const E_TAG = MD5(path);
 
-        res.setHeader('Cache-Control', ['public', 'max-age=31536000', 'no-cache']);
+        res.setHeader('Cache-Control', 'public, max-age=31536000, no-cache');
         res.setHeader('ETag', `"${E_TAG}"`);
 
         const IF_NONE_MATCH = HEADERS['if-none-match'];
