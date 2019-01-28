@@ -1,3 +1,8 @@
+## 0.3.0 - 2019-01-28
+
+- Add pid info logging
+- Improve start info
+
 ## 0.2.0 - 2019-01-28
 
 - Move `dir` option to the first arg
