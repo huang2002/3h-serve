@@ -211,6 +211,8 @@ exports.crtServer = (options = {}) => {
 
     }).on('error', err => {
         logger.error(err);
+    }).on('close', () => {
+        logger.info('Server closed.');
     });
 
     if (START) {
