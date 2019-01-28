@@ -57,7 +57,7 @@ There is also awesome routing information available. By default, only basic mess
 
 Compression(including `gzip` & `deflate`) is enabled by default for any assert.
 
-#### Forbidden url pattern
+#### Forbidden URL pattern
 
 Forbidden URLs can be indicated by giving a regular expression.
 
@@ -106,7 +106,7 @@ A simple but powerful server.
 
     --no-spa                      Disable SPA routing.
 
-    --forbidden                   Forbidden url pattern.
+    --forbidden                   Forbidden URL pattern.
 
     --fallback-page     <file>    The path of fallback page.
                                   Default: /404.html
@@ -148,7 +148,7 @@ A simple but powerful server.
     const server = crtServer({
         // Options:
         //   start?: boolean
-        //   filter?: (req, res) => boolean | string
+        //   filter?: (req, res) => false | string | void
         //   dir?: string
         //   port?: number
         //   spaPage?: false | string

@@ -49,7 +49,7 @@ cli.first({
     help: 'Disable SPA routing.'
 }).arg({
     name: '-forbidden',
-    help: 'Forbidden url pattern.'
+    help: 'Forbidden URL pattern.'
 }).arg({
     name: '-fallback-page',
     val: 'file',

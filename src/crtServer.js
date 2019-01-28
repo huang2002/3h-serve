@@ -16,7 +16,7 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
 /**
  * @typedef CrtServerOptions
  * @property {boolean | undefined} start
- * @property {((req: import('http').IncomingMessage, res: import('http').ServerResponse) => boolean | string) | undefined} filter
+ * @property {((req: import('http').IncomingMessage, res: import('http').ServerResponse) => false | string | void) | undefined} filter
  * @property {string | undefined} dir
  * @property {number | undefined} port
  * @property {false | string | undefined} spaPage
