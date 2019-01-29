@@ -56,7 +56,7 @@ exports.crtServer = (options = {}) => {
         typeMap = DEFAULT_TYPE_MAP,
         gzip: GZIP_ENABLED = true,
         deflate: DEFLATE_ENABLED = true,
-        cache: CACHE,
+        cache: CACHE = true,
         verbose: VERBOSE,
         debug: DEBUG,
         timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
@@ -117,19 +117,21 @@ exports.crtServer = (options = {}) => {
 
         const FILTER_RESULT = filter && filter(req, res);
 
-        if (FILTER_RESULT === false) {
-            return;
-        }
-
-        const { method: METHOD, url: ORIGINAL_URL } = req,
-            FILTERED_URL = typeof FILTER_RESULT === 'string' ? FILTER_RESULT : ORIGINAL_URL,
-            URL = FILTERED_URL.split('?')[0];
+        const { method: METHOD, url: ORIGINAL_URL } = req;
 
         if (SEG) {
             logger.log(SEG);
         }
 
         logger.log(`> ${METHOD} ${ORIGINAL_URL}`);
+
+        if (FILTER_RESULT === false) {
+            debug('Intercepted by filter');
+            return;
+        }
+
+        const FILTERED_URL = typeof FILTER_RESULT === 'string' ? FILTER_RESULT : ORIGINAL_URL,
+            URL = FILTERED_URL.split('?')[0];
 
         if (FILTERED_URL !== ORIGINAL_URL) {
             debug(`Filter: "${FILTERED_URL}"`);

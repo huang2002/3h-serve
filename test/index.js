@@ -6,10 +6,18 @@ const { crtServer } = require('../src/crtServer'),
 
 const TEST_PORT = 8080,
     FILE_ENCODING = 'utf-8',
-    AUTO = process.argv.length < 3;
+    AUTO = process.argv.length < 3,
+    USER_CREATE_RES = read(join(__dirname, '_user_create_res.txt'));
 
 const server = AUTO && crtServer({
-    filter: res => res.url.endsWith('?404') ? '/not/found' : true,
+    filter: ({ url }, res) => {
+        if (url.endsWith('?404')) {
+            return '/not/found';
+        } else if (url === '/user/create') {
+            res.end(USER_CREATE_RES);
+            return false;
+        }
+    },
     port: TEST_PORT,
     dir: __dirname,
     verbose: true,
@@ -83,6 +91,7 @@ assertContent('/foo', 'foo.html');
 assertContent('/foo/', 'foo/index.html');
 assertContent('/test?404', '404.html');
 assertContent('/not/found', '404.html');
+assertContent('/user/create', '_user_create_res.txt');
 
 function assertHeaders(path, expectHeaders) {
 
