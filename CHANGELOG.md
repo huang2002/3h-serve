@@ -1,3 +1,8 @@
+## 0.4.0 - 2019-01-29
+
+- Add default value for cache option
+- Improve `filter` handling
+
 ## 0.3.0 - 2019-01-28
 
 - Add pid info logging
