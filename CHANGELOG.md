@@ -1,3 +1,8 @@
+### 0.4.1 - 2019-01-31
+
+- Fix `verbose` cli option
+- Improve segment logging
+
 ## 0.4.0 - 2019-01-29
 
 - Add default value for cache option
