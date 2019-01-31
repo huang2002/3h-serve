@@ -119,7 +119,7 @@ A simple but powerful server.
 
     --no-cache                    Disable cache.
 
-    -v, --verbose                 Show log messages.
+    --verbose                     Show log messages.
 
     --debug                       Show debug messages.
                                   (including log messages)

@@ -60,7 +60,7 @@ exports.crtServer = (options = {}) => {
         verbose: VERBOSE,
         debug: DEBUG,
         timeFmt: TIME_FMT = DEFAULT_TIME_FMT,
-        seg: SEG = DEBUG && '-'.repeat(10),
+        seg: SEG = (DEBUG || VERBOSE) && '-'.repeat(10),
         sep: SEP = PATH_SEP
     } = options;
 
@@ -70,7 +70,7 @@ exports.crtServer = (options = {}) => {
     const logger = new Logger({
         timeFormat: TIME_FMT
     });
-    logger.setLevel(DEBUG ? 'debug' : VERBOSE ? 'log' : 'info');
+    logger.setLevel(DEBUG ? 'debug' : (VERBOSE ? 'log' : 'info'));
 
     function logRes(code) {
         logger.log(`< ${code} ${STATUS_CODES[code]}`);
@@ -214,6 +214,9 @@ exports.crtServer = (options = {}) => {
     }).on('error', err => {
         logger.error(err);
     }).on('close', () => {
+        if (SEG) {
+            logger.log(SEG);
+        }
         logger.info('Server closed.');
     });
 

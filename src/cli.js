@@ -68,8 +68,7 @@ cli.first({
     name: '-no-cache',
     help: 'Disable cache.'
 }).arg({
-    name: 'v',
-    alias: ['-verbose'],
+    name: '-verbose',
     help: 'Show log messages.'
 }).arg({
     name: '-debug',
