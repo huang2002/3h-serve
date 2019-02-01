@@ -1,3 +1,7 @@
+### 0.4.2 - 2019-02-01
+
+- Fix 404 logging
+
 ### 0.4.1 - 2019-01-31
 
 - Fix `verbose` cli option
