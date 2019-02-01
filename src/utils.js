@@ -46,7 +46,7 @@ exports.respond = ({ path, req, res, typeMap, gzip, deflate, logRes, cache }) =>
 
     }
 
-    logRes(200);
+    logRes(res.statusCode);
 
     if (req.method === 'HEAD') {
         return res.end();
