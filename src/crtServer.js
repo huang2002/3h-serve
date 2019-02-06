@@ -41,7 +41,7 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
  */
 exports.crtServer = (options = {}) => {
 
-    const CWD = process.cwd();
+    const CWD = process.cwd() + PATH_SEP;
 
     const {
         start: START = true,
