@@ -1,3 +1,7 @@
+### 0.6.1 - 2019-02-06
+
+- Fix dir handling
+
 ## 0.6.0 - 2019-02-06
 
 - Improve default ext routing
