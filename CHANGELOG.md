@@ -1,6 +1,6 @@
-### 0.4.3 - 2019-02-06
+### 0.5.0 - 2019-02-06
 
-- Add necessary 301 redirect
+- Add necessary 302 redirect
 
 ### 0.4.2 - 2019-02-01
 
