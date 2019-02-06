@@ -1,3 +1,7 @@
+### 0.4.3 - 2019-02-06
+
+- Add necessary 301 redirect
+
 ### 0.4.2 - 2019-02-01
 
 - Fix 404 logging
