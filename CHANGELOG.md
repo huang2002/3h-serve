@@ -1,3 +1,7 @@
+### 0.6.2 - 2019-02-06
+
+- Improve dir handling
+
 ### 0.6.1 - 2019-02-06
 
 - Fix dir handling
