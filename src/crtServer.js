@@ -159,9 +159,9 @@ exports.crtServer = (options = {}) => {
                     if (ENDS_WITH_SEP) {
                         resolve200(DEFAULT_PAGE_PATH, req, res);
                     } else {
-                        logRes(301);
+                        logRes(302);
                         res.setHeader('Location', URL + '/');
-                        end(res, 301);
+                        end(res, 302);
                     }
                     return true;
                 }
