@@ -1,8 +1,8 @@
 const Logger = require('3h-log'),
     { createServer, STATUS_CODES } = require('http'),
-    { join, dirname, relative, sep: PATH_SEP } = require('path'),
+    { join, dirname, relative, sep: PATH_SEP, normalize } = require('path'),
     { existsSync: exists, statSync: stat } = require('fs'),
-    { end, respond } = require('./utils'),
+    { end, respond, toDir } = require('./utils'),
     DEFAULT_TYPE_MAP = require('./typeMap');
 
 const DEFAULT_PORT = exports.DEFAULT_PORT = 88;
@@ -41,12 +41,12 @@ exports.DEFAULT_TYPE_MAP = DEFAULT_TYPE_MAP;
  */
 exports.crtServer = (options = {}) => {
 
-    const CWD = process.cwd() + PATH_SEP;
+    const CWD = process.cwd();
 
     const {
         start: START = true,
         filter,
-        dir: DIR = CWD,
+        dir: ORIGINAL_DIR = CWD,
         port: PORT = DEFAULT_PORT,
         spaPage: SPA_PAGE = DEFAULT_SPA_PAGE,
         defaultPage: DEFAULT_PAGE = DEFAULT_DEFAULT_PAGE,
@@ -64,7 +64,8 @@ exports.crtServer = (options = {}) => {
         sep: SEP = PATH_SEP
     } = options;
 
-    const FALLBACK_PAGE_PATH = FALLBACK_PAGE && join(DIR, FALLBACK_PAGE),
+    const DIR = toDir(normalize(ORIGINAL_DIR)),
+        FALLBACK_PAGE_PATH = FALLBACK_PAGE && join(DIR, FALLBACK_PAGE),
         FALLBACK_PAGE_EXISTS = FALLBACK_PAGE && exists(FALLBACK_PAGE_PATH);
 
     const logger = new Logger({

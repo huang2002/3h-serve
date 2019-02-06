@@ -1,7 +1,9 @@
 const { createGzip, createDeflate } = require('zlib'),
-    { extname } = require('path'),
+    { extname, sep } = require('path'),
     { createReadStream, readFileSync: read } = require('fs'),
     { createHash } = require('crypto');
+
+exports.toDir = dir => dir.endsWith(sep) ? dir : dir + sep;
 
 const end = exports.end = (res, code) => {
     res.statusCode = code;
