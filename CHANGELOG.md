@@ -1,3 +1,7 @@
+## 0.6.0 - 2019-02-06
+
+- Improve default ext routing
+
 ### 0.5.0 - 2019-02-06
 
 - Add necessary 302 redirect
