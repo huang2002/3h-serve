@@ -80,7 +80,7 @@ exports.crtServer = (options = {}) => {
         logger.debug('- ' + msg);
     }
 
-    function found(path) {
+    function find(path) {
         debug(`Find "${path}"`);
         return exists(path);
     }
@@ -147,21 +147,25 @@ exports.crtServer = (options = {}) => {
             return end(res, 403);
         }
 
-        const PATH = join(DIR, URL.slice(1));
+        const PATH = join(DIR, URL.slice(1)),
+            DEFAULT_PAGE_PATH = PATH && join(PATH, DEFAULT_PAGE);
 
         function routeDir(path, isDir) {
 
+            const ENDS_WITH_SEP = path.endsWith(SEP);
+
             function findDefaultPage() {
-                if (DEFAULT_PAGE) {
-                    const DEFAULT_PAGE_PATH = join(path, DEFAULT_PAGE);
-                    if (found(DEFAULT_PAGE_PATH)) {
+                if (DEFAULT_PAGE && find(DEFAULT_PAGE_PATH)) {
+                    if (ENDS_WITH_SEP) {
                         resolve200(DEFAULT_PAGE_PATH, req, res);
-                        return true;
+                    } else {
+                        logRes(301);
+                        res.setHeader('Location', URL + '/');
+                        end(res, 301);
                     }
+                    return true;
                 }
             }
-
-            const ENDS_WITH_SEP = path.endsWith(SEP);
 
             if (ENDS_WITH_SEP && findDefaultPage()) {
                 return;
@@ -169,7 +173,7 @@ exports.crtServer = (options = {}) => {
 
             if (DEFAULT_EXT) {
                 const DEFAULT_EXT_PATH = (ENDS_WITH_SEP ? path.slice(0, -1) : path) + DEFAULT_EXT;
-                if (found(DEFAULT_EXT_PATH)) {
+                if (find(DEFAULT_EXT_PATH)) {
                     return resolve200(DEFAULT_EXT_PATH, req, res);
                 }
             }
@@ -180,7 +184,7 @@ exports.crtServer = (options = {}) => {
 
             if (SPA_PAGE) {
                 const SPA_PAGE_PATH = join(isDir ? path : dirname(path), SPA_PAGE);
-                if (found(SPA_PAGE_PATH)) {
+                if (find(SPA_PAGE_PATH)) {
                     return resolve200(SPA_PAGE_PATH, req, res);
                 }
             }
@@ -191,7 +195,7 @@ exports.crtServer = (options = {}) => {
 
         try {
 
-            if (!found(PATH)) {
+            if (!find(PATH)) {
                 if (PATH.includes('.')) {
                     resolve404(req, res);
                 } else {

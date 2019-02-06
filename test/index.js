@@ -130,3 +130,6 @@ assertHeaders('/200.html', {
 assertHeaders('/index.js', {
     'content-type': 'text/javascript'
 });
+assertHeaders('/bar', {
+    'location': '/bar/'
+})
