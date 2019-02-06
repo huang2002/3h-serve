@@ -171,7 +171,7 @@ exports.crtServer = (options = {}) => {
                 return;
             }
 
-            if (DEFAULT_EXT) {
+            if (!ENDS_WITH_SEP && DEFAULT_EXT) {
                 const DEFAULT_EXT_PATH = (ENDS_WITH_SEP ? path.slice(0, -1) : path) + DEFAULT_EXT;
                 if (find(DEFAULT_EXT_PATH)) {
                     return resolve200(DEFAULT_EXT_PATH, req, res);
