@@ -1,3 +1,9 @@
+## 0.7.0 - 2019-08-24
+
+- Modify some APIs
+- Add serverless support
+- Remove filter
+
 ### 0.6.2 - 2019-02-06
 
 - Improve dir handling

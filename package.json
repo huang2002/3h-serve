@@ -1,13 +1,12 @@
 {
     "name": "3h-serve",
-    "version": "0.6.2",
+    "version": "0.7.0",
     "description": "A simple but powerful server.",
-    "main": "src/crtServer.js",
-    "bin": "src/cli.js",
+    "main": "index.js",
+    "bin": "cli.js",
     "scripts": {
-        "start": "node src/cli test --debug",
-        "help": "node src/cli -h",
-        "test": "node test/index.js"
+        "help": "node cli.js -h",
+        "test": "node cli.js test -p 88 -l debug -s \"^/api/\" --forbidden secret"
     },
     "repository": "huang2002/3h-serve",
     "keywords": [
@@ -15,6 +14,7 @@
         "server",
         "cli",
         "spa",
+        "serverless",
         "3h"
     ],
     "author": "3h",
@@ -29,9 +29,12 @@
     },
     "devDependencies": {
         "3h-join": "^2.0.0",
-        "@types/node": "^10.12.18"
+        "@types/node": "^12.7.2"
     },
     "files": [
-        "src"
+        "lib.js",
+        "types.js",
+        "index.js",
+        "cli.js"
     ]
 }
