@@ -83,6 +83,8 @@ You can also customize the fallback page of your site by just simpling put a fil
     <root>                        Serving root
                                   Default: .
 
+    -a, --absolute                Indicate that the root path is absolute
+
     -p, --port          <port>    The port to listen on
                                   Default: 8080
 

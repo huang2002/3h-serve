@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const CLI = require('3h-cli'),
+    { join } = require('path'),
     { serve, DEFAULT_SERVE_OPTIONS } = require('./index');
 
 let server;
@@ -20,6 +21,10 @@ const cli = CLI.create({
     val: 'port',
     help: 'The port to listen on\n' +
         `Default: ${DEFAULT_SERVE_OPTIONS.port}`
+}).arg({
+    name: 'a',
+    alias: ['-absolute'],
+    help: 'Indicate that the root path is absolute'
 }).arg({
     name: '-default-page',
     val: 'file',
@@ -93,9 +98,14 @@ const cli = CLI.create({
     if (args.has('h')) {
         return cli.help();
     }
-    const pick = key => args.has(key) ? args.get(key)[0] : undefined;
+    const pick = key => args.has(key) ? args.get(key)[0] : undefined,
+        root = pick('root'),
+        absolute = args.has('a');
+    if (absolute && !args.has('root')) {
+        return console.error('Root path not found');
+    }
     server = serve({
-        root: pick('root'),
+        root: args.has('root') && !absolute ? join(process.cwd(), root) : root,
         port: pick('p'),
         defaultPage: args.has('-no-default-page') ? null : pick('-default-page'),
         defaultExtension: args.has('-no-default-ext') ? null : pick('-default-ext'),

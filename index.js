@@ -55,8 +55,6 @@ exports.serve = options => {
 
     options = lib.merge(DEFAULT_SERVE_OPTIONS, options || Object.create(null));
 
-    const rootPath = join(process.cwd(), options.root);
-
     const logger = new Logger({
         timeFormat: options.timeFormat,
     });
@@ -71,16 +69,16 @@ exports.serve = options => {
         }
         logger.log(request.method + ' ' + request.url);
         const url = request.url.split('?')[0],
-            path = normalize(join(rootPath, url));
+            path = normalize(join(options.root, url));
         if (
-            !path.startsWith(rootPath) ||
+            !path.startsWith(options.root) ||
             (options.forbiddenPattern && options.forbiddenPattern.test(url))
         ) {
             return lib.endWithCode(response, 403, logger);
         }
         try {
             lib.solve(request, response, path, {
-                root: rootPath,
+                root: options.root,
                 cache: options.cache,
                 zip: options.zip,
                 types: options.types,
