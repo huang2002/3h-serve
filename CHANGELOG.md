@@ -1,3 +1,7 @@
+## 0.8.0 - 2019-08-29
+
+- Add absolute option
+
 ## 0.7.0 - 2019-08-24
 
 - Modify some APIs
