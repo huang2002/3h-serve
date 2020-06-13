@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+
+- Fix root handling
+
 ## 0.8.1
 
 - Fix default root handling
