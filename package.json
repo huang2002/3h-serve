@@ -25,11 +25,11 @@
     "homepage": "https://github.com/huang2002/3h-serve#readme",
     "dependencies": {
         "3h-cli": "^1.5.0",
-        "3h-log": "^3.1.1"
+        "3h-log": "^3.1.2"
     },
     "devDependencies": {
         "3h-join": "^2.0.0",
-        "@types/node": "^12.7.2"
+        "@types/node": "^12.12.47"
     },
     "files": [
         "lib.js",
