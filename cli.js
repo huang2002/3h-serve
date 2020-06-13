@@ -105,7 +105,7 @@ const cli = CLI.create({
         return console.error('Root path not found');
     }
     server = serve({
-        root: args.has('root') && !absolute ? join(process.cwd(), root) : root,
+        root: (args.has('root') && !absolute) ? join(process.cwd(), root) : root,
         port: pick('p'),
         defaultPage: args.has('-no-default-page') ? null : pick('-default-page'),
         defaultExtension: args.has('-no-default-ext') ? null : pick('-default-ext'),
