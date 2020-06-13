@@ -99,13 +99,13 @@ const cli = CLI.create({
         return cli.help();
     }
     const pick = key => args.has(key) ? args.get(key)[0] : undefined,
-        root = pick('root'),
+        root = pick('root') || DEFAULT_SERVE_OPTIONS.root,
         absolute = args.has('a');
     if (absolute && !args.has('root')) {
         return console.error('Root path not found');
     }
     server = serve({
-        root: (args.has('root') && !absolute) ? join(process.cwd(), root) : root,
+        root: absolute ? root : join(process.cwd(), root),
         port: pick('p'),
         defaultPage: args.has('-no-default-page') ? null : pick('-default-page'),
         defaultExtension: args.has('-no-default-ext') ? null : pick('-default-ext'),
